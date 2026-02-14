@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="th">
 <head>
   <meta charset="UTF-8" />
@@ -352,6 +352,22 @@
       color: var(--muted);
       line-height: 1.5;
     }
+    @media (max-width: 600px){
+      .kpi{
+        grid-template-columns: 1fr;
+        gap: 12px;
+      }
+      .kpi .box{
+        padding: 16px;
+      }
+      .kpi .num{
+        font-size: 22px;
+      }
+      .kpi .label{
+        font-size: 14px;
+        line-height: 1.6;
+      }
+    }
     code.inline{
       padding: 3px 8px;
       border-radius: 8px;
@@ -420,13 +436,59 @@
       color: var(--muted);
       line-height: 1.5;
     }
+    .expandable-img{
+      cursor: pointer;
+    }
+    .lightbox{
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.92);
+      z-index: 9999;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      box-sizing: border-box;
+    }
+    .lightbox.is-open{
+      display: flex;
+    }
+    .lightbox img{
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+      border-radius: var(--radius);
+      box-shadow: 0 20px 60px rgba(0,0,0,.6);
+    }
+    .lightbox-close{
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      width: 44px;
+      height: 44px;
+      border: none;
+      background: rgba(255,255,255,.15);
+      color: var(--text);
+      font-size: 28px;
+      line-height: 1;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+      transition: background 0.2s;
+    }
+    .lightbox-close:hover{
+      background: rgba(255,255,255,.25);
+    }
   </style>
 </head>
 
 <body>
   <div class="container">
     <div class="hero-container">
-      <img src="assets/ai-genomics-hero.png" alt="AI และ Genomic Data - การผสานระหว่างปัญญาประดิษฐ์กับข้อมูลพันธุกรรม" class="hero-image">
+      <img src="assets/ai-genomics-hero.png" alt="AI และ Genomic Data - การผสานระหว่างปัญญาประดิษฐ์กับข้อมูลพันธุกรรม" class="hero-image expandable-img" title="คลิกเพื่อขยายเต็มจอ">
     </div>
     <header>
       <h1>🧬 AI และ Machine Learning กับข้อมูลพันธุกรรม (Genomic)</h1>
@@ -478,7 +540,7 @@
       </p>
 
       <div class="gwas-plot-wrap" style="margin:24px 0">
-        <img src="assets/genome_thai.jpg" alt="อินโฟกราฟิก: ยุค Genomics 1.0 สู่ Genomics 2.0 - ปฏิวัติสุขภาพด้วยจีโนมิกส์" class="gwas-plot">
+        <img src="assets/genome_thai.jpg" alt="อินโฟกราฟิก: ยุค Genomics 1.0 สู่ Genomics 2.0 - ปฏิวัติสุขภาพด้วยจีโนมิกส์" class="gwas-plot expandable-img" title="คลิกเพื่อขยายเต็มจอ">
         <p class="plot-caption">จากยุค Mapping สู่ยุค Functional — เทคโนโลยีและ AI ช่วยให้เข้าใจชีวิตจากรหัสพันธุกรรม</p>
         <p class="plot-caption" style="margin-top: 6px;">FB : Center for Medical Genomics</p>
       </div>
@@ -599,7 +661,7 @@
       </div>
 
       <div class="gwas-plot-wrap">
-        <img src="assets/plot_man.png" alt="Manhattan plot - ตัวอย่างผลวิเคราะห์ GWAS แสดงตำแหน่งบนจีโนมที่สัมพันธ์กับโรค" class="gwas-plot">
+        <img src="assets/plot_man.png" alt="Manhattan plot - ตัวอย่างผลวิเคราะห์ GWAS แสดงตำแหน่งบนจีโนมที่สัมพันธ์กับโรค" class="gwas-plot expandable-img" title="คลิกเพื่อขยายเต็มจอ">
         <p class="plot-caption">ตัวอย่างผลวิเคราะห์ GWAS (Manhattan plot) — จุดที่สูงขึ้นแสดงตำแหน่งในจีโนมที่อาจสัมพันธ์กับโรค</p>
       </div>
 
@@ -668,5 +730,36 @@
       </div>
     </section>
   </div>
+
+  <div id="img-lightbox" class="lightbox" aria-hidden="true">
+    <button type="button" class="lightbox-close" aria-label="ปิด" onclick="closeLightbox()">&times;</button>
+    <img id="lightbox-img" src="" alt="">
+  </div>
+
+  <script>
+    document.querySelectorAll('.expandable-img').forEach(function(img){
+      img.addEventListener('click', function(){
+        var lb = document.getElementById('img-lightbox');
+        var lbImg = document.getElementById('lightbox-img');
+        lbImg.src = this.src;
+        lbImg.alt = this.alt;
+        lb.classList.add('is-open');
+        lb.setAttribute('aria-hidden', 'false');
+        document.body.style.overflow = 'hidden';
+      });
+    });
+    function closeLightbox(){
+      var lb = document.getElementById('img-lightbox');
+      lb.classList.remove('is-open');
+      lb.setAttribute('aria-hidden', 'true');
+      document.body.style.overflow = '';
+    }
+    document.getElementById('img-lightbox').addEventListener('click', function(e){
+      if (e.target === this) closeLightbox();
+    });
+    document.addEventListener('keydown', function(e){
+      if (e.key === 'Escape') closeLightbox();
+    });
+  </script>
 </body>
 </html>
